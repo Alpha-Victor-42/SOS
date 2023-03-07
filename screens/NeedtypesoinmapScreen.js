@@ -123,6 +123,7 @@ const NeedtypesoinmapScreen = props => {
                   }
                   renderItem={({ item }) => {
                     const mapViewData = item;
+                    console.log(mapViewData)
                     return (
                       <MapMarker
                         title={mapViewData?.nom}
