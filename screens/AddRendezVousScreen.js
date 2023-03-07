@@ -13,6 +13,7 @@ import {
   withTheme,
 } from '@draftbit/ui';
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -176,6 +177,11 @@ const AddRendezVousScreen = props => {
                     time: timePickerValue,
                     title: rdvWithValue,
                   });
+                  await Alert.alert(
+                    'Succès',
+                    'Le rendez-vous à bien été ajouté à votre agenda',
+                    navigation.navigate('AgendaScreen')
+                  )
                 } catch (err) {
                   console.error(err);
                 }
