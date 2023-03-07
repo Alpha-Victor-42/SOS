@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "Application Saint Nazaire",
+    "slug": "application-saint-nazaire",
+    "scheme": "untitled-app",
+    "description": "My app powered by Draftbit",
+    "privacy": "unlisted",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "version": "1.4.0",
+    "orientation": "portrait",
+    "icon": "./assets/app/icon.png",
+    "splash": {
+      "image": "./assets/app/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#5A45FF"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.draftbit.untitledapp",
+      "supportsTablet": false,
+      "buildNumber": "1.4.0",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses the location to create a list of local services."
+      },
+      "usesIcloudStorage": false
+    },
+    "android": {
+      "versionCode": 4,
+      "package": "com.sos.saintnazaire",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO"
+      ]
+    },
+    "web": {
+      "themeColor": "#000000"
+    },
+    "notification": {
+      "androidMode": "default"
+    }
+  }
+}
