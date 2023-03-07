@@ -3,7 +3,7 @@ import * as CustomCode from '../CustomCode';
 import * as $Auth$DirectusApi from '../apis/$Auth$DirectusApi.js';
 import * as GlobalVariables from '../config/GlobalVariableContext';
 import { Button, Link, ScreenContainer, Spacer, withTheme } from '@draftbit/ui';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { AppContext } from '../config/config.segment';
 
@@ -11,6 +11,7 @@ const SimpleLoginScreen = props => {
 
   const { myVariable, setMyVariable } = useContext(AppContext)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const Constants = GlobalVariables.useValues();
   const Variables = Constants;
@@ -128,50 +129,54 @@ const SimpleLoginScreen = props => {
           />
           <Spacer top={24} right={8} bottom={24} left={8} />
           {/* Sign In Button */}
-          <Button
-            onPress={() => {
-              const handler = async () => {
-                try {
-                  const loginResponseJson =
-                    await $Auth$DirectusApi.userLoginEndpointPOST(Constants, {
-                      signinEmail: emailInputValue,
-                      signinPassword: passwordInputValue,
+          {isLoading ? <ActivityIndicator size="small" color="#0000ff" /> : (
+            <Button
+              onPress={() => {
+                const handler = async () => {
+                  setIsLoading(true)
+                  try {
+                    const loginResponseJson =
+                      await $Auth$DirectusApi.userLoginEndpointPOST(Constants, {
+                        signinEmail: emailInputValue,
+                        signinPassword: passwordInputValue,
+                      });
+                    const access_token = loginResponseJson.data.access_token;
+                    if (!access_token) {
+                      return;
+                    }
+                    setGlobalVariableValue({
+                      key: 'Directus_user_token',
+                      value: access_token,
                     });
-                  const access_token = loginResponseJson.data.access_token;
-                  if (!access_token) {
-                    return;
+                    const userJSON =
+                      await $Auth$DirectusApi.gETCurrentLoggedUserGET(Constants, {
+                        access_token: access_token,
+                      });
+                    const userOKEN = userJSON.data.token;
+                    setGlobalVariableValue({
+                      key: 'Directus_user_token',
+                      value: userOKEN,
+                    });
+                    const userRole = userJSON.data.role.id;
+                    setGlobalVariableValue({
+                      key: 'Directus_user_role',
+                      value: userRole,
+                    });
+                    conditionnalNav(userRole);
+                    setIsLoading(false)
+                  } catch (err) {
+                    setIsLoading(false)
+                    setErrorMessage('Une erreur s\'est produite lors de la connexion. Veuillez r\essayer !');
                   }
-                  setGlobalVariableValue({
-                    key: 'Directus_user_token',
-                    value: access_token,
-                  });
-                  const userJSON =
-                    await $Auth$DirectusApi.gETCurrentLoggedUserGET(Constants, {
-                      access_token: access_token,
-                    });
-                  const userOKEN = userJSON.data.token;
-                  setGlobalVariableValue({
-                    key: 'Directus_user_token',
-                    value: userOKEN,
-                  });
-                  const userRole = userJSON.data.role.id;
-                  setGlobalVariableValue({
-                    key: 'Directus_user_role',
-                    value: userRole,
-                  });
-                  conditionnalNav(userRole);
-                } catch (err) {
-                  setErrorMessage('Une erreur s\'est produite lors de la connexion. Veuillez r\essayer !');
-                  console.log('Erreur lors de la connexion:', err);
-                }
-              };
-              handler();
-            }}
-            style={styles(theme).Buttonfcc82734}
-            title={'Connexion'}
-          >
-            {'Sign Up'}
-          </Button>
+                };
+                handler();
+              }}
+              style={styles(theme).Buttonfcc82734}
+              title={'Connexion'}
+            >
+              {'Sign Up'}
+            </Button>
+          )}
           <Spacer top={16} right={8} bottom={16} left={8} />
           <View style={styles(theme).Viewb6df9a71}>
             <Text>{'Pas encore de compte ?'}</Text>
