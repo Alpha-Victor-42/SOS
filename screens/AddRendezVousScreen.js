@@ -98,6 +98,7 @@ const AddRendezVousScreen = props => {
           </Text>
           <DatePicker
             onDateChange={newDatePickerValue => {
+              console.log(newDatePickerValue)
               try {
                 setDatePickerValue(newDatePickerValue);
               } catch (err) {
@@ -110,6 +111,7 @@ const AddRendezVousScreen = props => {
             leftIconMode={'inset'}
             type={'underline'}
             mode={'date'}
+            minimumDate={new Date()}
           />
           {/* Time Picker */}
           <DatePicker
@@ -170,11 +172,13 @@ const AddRendezVousScreen = props => {
             onPress={() => {
               const handler = async () => {
                 try {
+                  console.log(timePickerValue)
                   await n8NFORMATRendezVousPOST.mutateAsync({
                     access_token: Constants['Directus_user_token'],
-                    date: datePickerValue,
+                    date: new Date(datePickerValue.setHours(datePickerValue.getHours() - 1)),
                     description: memoDescription,
                     time: timePickerValue,
+                    time: new Date(timePickerValue.setHours(timePickerValue.getHours() - 1)),
                     title: rdvWithValue,
                   });
                   await Alert.alert(
