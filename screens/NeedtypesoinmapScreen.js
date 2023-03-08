@@ -123,13 +123,16 @@ const NeedtypesoinmapScreen = props => {
                   }
                   renderItem={({ item }) => {
                     const mapViewData = item;
-                    console.log(mapViewData)
+                    
                     return (
                       <MapMarker
-                        title={mapViewData?.nom}
-                        description={mapViewData?.adresse}
-                        latitude={mapViewData?.latitude}
-                        longitude={mapViewData?.longitude}
+                        title={mapViewData?.Nom}
+                        description={mapViewData['Adresse complète']}
+                        latitude={mapViewData.Latitude}
+                        longitude={mapViewData.Longitude}
+                        handlePress={() => {
+                          console.log('ici')
+                        }}
                       >
                         <MapCallout
                           onPress={() => {
@@ -138,22 +141,22 @@ const NeedtypesoinmapScreen = props => {
                               setType(
                                 mapViewData?.besoins && mapViewData?.besoins[0]
                               );
-                              setAdresse(mapViewData?.adresse);
-                              setPhone(mapViewData?.telephone);
-                              setEmail(mapViewData?.email);
-                              setContactModal(true);
+                              setAdresse(mapViewData?.Adresse);
+                              setPhone(mapViewData["Téléphone"]);
+                              setEmail(mapViewData?.Email);
+                              setContactModal(false);
                             } catch (err) {
                               console.error(err);
                             }
                           }}
-                          showTooltip={false}
+                          showTooltip={true}
                         />
                       </MapMarker>
                     );
                   }}
                   style={styles(theme).MapViewde486c79}
-                  latitude={(fetchData && fetchData[0])?.latitude}
-                  longitude={(fetchData && fetchData[0])?.longitude}
+                  latitude={(fetchData && fetchData[0])?.Latitude}
+                  longitude={(fetchData && fetchData[0])?.Longitude}
                   zoom={8}
                   zoomEnabled={true}
                   rotateEnabled={true}
