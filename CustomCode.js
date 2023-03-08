@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -323,7 +323,11 @@ export const ToggleGroupButtons = () => {
   // get all variables list (ex: variables.myVariable)
   let variables = GlobalVariableContext.useValues();
 
-  const [selection, setSelection] = useState(variables.pageSelectedToggle);
+  const [selection, setSelection] = useState("");
+
+  useEffect(() => {
+    setSelection(variables.pageSelectedToggle);
+  }, [variables.pageSelectedToggle]);
 
   function setSelectedToggle(element) {
     setSelection(element);
@@ -344,6 +348,7 @@ export const ToggleGroupButtons = () => {
                   : { backgroundColor: '#F9F9F9' },
               ]}
               onPress={() => setSelectedToggle(e)}
+              key={i}
             >
               <Text
                 style={[
