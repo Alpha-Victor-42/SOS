@@ -54,8 +54,8 @@ const SimpleLoginScreen = props => {
   const { theme } = props;
   const { navigation } = props;
 
-  const [emailInputValue, setEmailInputValue] = React.useState('victor@av42.com');
-  const [passwordInputValue, setPasswordInputValue] = React.useState('test1234');
+  const [emailInputValue, setEmailInputValue] = React.useState();
+  const [passwordInputValue, setPasswordInputValue] = React.useState();
 
   useEffect(() => {
     loadData()
