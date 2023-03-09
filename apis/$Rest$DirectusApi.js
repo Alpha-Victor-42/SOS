@@ -1572,6 +1572,29 @@ export const usePOSTContactPOST = initialArgs => {
   );
 };
 
+export const PATCHTagOnUser = (access_token, tags) => {
+  fetch(
+    `https://saintnazaire.av42.com/users/me?access_token=${access_token ?? ''}`,
+    {
+      body: JSON.stringify({
+        'tags': tags
+      }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      method: 'PATCH',
+    }
+  ).then(res => {
+    if (!res.ok) {
+      console.error('Fetch error: ' + res.status + ' ' + res.statusText);
+    }
+    return res;
+  })
+    .then(res => res.json())
+    .catch(() => {});
+}
+
 export const FetchPOSTContactPOST = ({
   children,
   onData = () => {},

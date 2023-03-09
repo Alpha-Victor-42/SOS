@@ -8,8 +8,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { AppContext } from '../config/config.segment';
 
 const SimpleLoginScreen = props => {
-
-  const {myVariable, setMyVariable} = useContext(AppContext)
   const Constants = GlobalVariables.useValues();
   const Variables = Constants;
   const setGlobalVariableValue = GlobalVariables.useSetValue();
@@ -56,8 +54,8 @@ const SimpleLoginScreen = props => {
   const { theme } = props;
   const { navigation } = props;
 
-  const [emailInputValue, setEmailInputValue] = React.useState('');
-  const [passwordInputValue, setPasswordInputValue] = React.useState('');
+  const [emailInputValue, setEmailInputValue] = React.useState('victor@av42.com');
+  const [passwordInputValue, setPasswordInputValue] = React.useState('test1234');
 
   useEffect(() => {
     loadData()

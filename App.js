@@ -15,7 +15,8 @@ import cacheAssetsAsync from './config/cacheAssetsAsync';
 import { GlobalVariableProvider } from './config/GlobalVariableContext';
 import { useFonts } from 'expo-font';
 
-import { AppProvider } from './config/config.segment';
+// import { AppProvider } from './config/config.segment';
+import ModalAvis from './screens/ModalAvis';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -68,20 +69,18 @@ const App = () => {
   }
 
   return (
-    <AppProvider>
       <SafeAreaProvider
         initialMetrics={initialWindowMetrics}
-        onLayout={onLayoutRootView}
-      >
+        onLayout={onLayoutRootView}>
         <GlobalVariableProvider>
           <QueryClientProvider client={queryClient}>
             <ThemeProvider theme={DraftbitTheme}>
+              <ModalAvis />
               <AppNavigator />
             </ThemeProvider>
           </QueryClientProvider>
         </GlobalVariableProvider>
       </SafeAreaProvider>
-    </AppProvider>
   );
 };
 
