@@ -1,13 +1,16 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import * as CustomCode from '../CustomCode';
 import * as $Auth$DirectusApi from '../apis/$Auth$DirectusApi.js';
 import * as GlobalVariables from '../config/GlobalVariableContext';
 import { Button, Link, ScreenContainer, Spacer, withTheme } from '@draftbit/ui';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { AppContext } from '../config/config.segment';
 
 const SimpleLoginScreen = props => {
+  const { myVariable, setMyVariable } = useContext(AppContext)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const Constants = GlobalVariables.useValues();
   const Variables = Constants;
   const setGlobalVariableValue = GlobalVariables.useSetValue();
@@ -54,8 +57,14 @@ const SimpleLoginScreen = props => {
   const { theme } = props;
   const { navigation } = props;
 
-  const [emailInputValue, setEmailInputValue] = React.useState();
-  const [passwordInputValue, setPasswordInputValue] = React.useState();
+
+  const [emailInputValue, setEmailInputValue] = React.useState('');
+  const [passwordInputValue, setPasswordInputValue] = React.useState('');
+  let errorStatus = ""
+
+  const handlePress = () => {
+    //myVariable.screen('Login Page');
+  }
 
   useEffect(() => {
     loadData()
@@ -66,60 +75,64 @@ const SimpleLoginScreen = props => {
   }
 
   return (
-      <ScreenContainer>
-        <KeyboardAwareScrollView
-          style={styles(theme).KeyboardAwareScrollView989db244}
-          contentContainerStyle={
-            styles(theme).KeyboardAwareScrollView6a955cc3Content
-          }
-        >
-          {/* Header */}
-          <View style={styles(theme).Viewf5275d98}>
-            {/* Title */}
-            <Text style={styles(theme).Text0b899493}>{'Se connecter'}</Text>
-            {/* Subtitle */}
-            <Text style={styles(theme).Textf51af5e8}>
-              {'Connectez vous pour continuer'}
-            </Text>
-          </View>
-          {/* Login Form */}
-          <View style={styles(theme).View5cbae6f0}>
-            {/* Email Input */}
-            <TextInput
-              onChangeText={newEmailInputValue => {
-                try {
-                  setEmailInputValue(newEmailInputValue);
-                } catch (err) {
-                  console.error(err);
-                }
-              }}
-              style={styles(theme).TextInputfb3e730b}
-              value={emailInputValue}
-              placeholder={'Email'}
-              keyboardType={'email-address'}
-              textContentType={'emailAddress'}
-              autoCapitalize={'none'}
-            />
-            <Spacer top={12} right={8} bottom={12} left={8} />
-            {/* Password Input */}
-            <TextInput
-              onChangeText={newPasswordInputValue => {
-                try {
-                  setPasswordInputValue(newPasswordInputValue);
-                } catch (err) {
-                  console.error(err);
-                }
-              }}
-              style={styles(theme).TextInputfb3e730b}
-              value={passwordInputValue}
-              placeholder={'Password'}
-              secureTextEntry={true}
-            />
-            <Spacer top={24} right={8} bottom={24} left={8} />
-            {/* Sign In Button */}
+    <ScreenContainer>
+      <KeyboardAwareScrollView
+        style={styles(theme).KeyboardAwareScrollView989db244}
+        contentContainerStyle={
+          styles(theme).KeyboardAwareScrollView6a955cc3Content
+        }
+      >
+        {/* Header */}
+        <View style={styles(theme).Viewf5275d98}>
+          {/* Title */}
+          <Text style={styles(theme).Text0b899493}>{'Se connecter'}</Text>
+          {/* Subtitle */}
+          <Text style={styles(theme).Textf51af5e8}>
+            {'Connectez vous pour continuer'}
+          </Text>
+        </View>
+        {/* Login Form */}
+        <View style={styles(theme).View5cbae6f0}>
+          {/* Email Input */}
+          <TextInput
+            onChangeText={newEmailInputValue => {
+              try {
+                setEmailInputValue(newEmailInputValue);
+              } catch (err) {
+                errorStatus = "Ceci est un test d'erreur"
+                console.log(errorStatus)
+                console.error(err);
+              }
+            }}
+            style={styles(theme).TextInputfb3e730b}
+            value={emailInputValue}
+            placeholder={'Email'}
+            keyboardType={'email-address'}
+            textContentType={'emailAddress'}
+            autoCapitalize={'none'}
+          />
+          <Spacer top={12} right={8} bottom={12} left={8} />
+          {/* Password Input */}
+          <TextInput
+            onChangeText={newPasswordInputValue => {
+              try {
+                setPasswordInputValue(newPasswordInputValue);
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+            style={styles(theme).TextInputfb3e730b}
+            value={passwordInputValue}
+            placeholder={'Password'}
+            secureTextEntry={true}
+          />
+          <Spacer top={24} right={8} bottom={24} left={8} />
+          {/* Sign In Button */}
+          {isLoading ? <ActivityIndicator size="small" color="#0000ff" /> : (
             <Button
               onPress={() => {
                 const handler = async () => {
+                  setIsLoading(true)
                   try {
                     const loginResponseJson =
                       await $Auth$DirectusApi.userLoginEndpointPOST(Constants, {
@@ -149,8 +162,10 @@ const SimpleLoginScreen = props => {
                       value: userRole,
                     });
                     conditionnalNav(userRole);
+                    setIsLoading(false)
                   } catch (err) {
-                    console.error(err);
+                    setIsLoading(false)
+                    setErrorMessage('Une erreur s\'est produite lors de la connexion. Veuillez r\essayer !');
                   }
                 };
                 handler();
@@ -160,26 +175,30 @@ const SimpleLoginScreen = props => {
             >
               {'Sign Up'}
             </Button>
-            <Spacer top={16} right={8} bottom={16} left={8} />
-            <View style={styles(theme).Viewb6df9a71}>
-              <Text>{'Pas encore de compte ?'}</Text>
-              <Spacer top={8} right={2} bottom={8} left={2} />
-              {/* Sign Up Link */}
-              <Link
-                onPress={() => {
-                  try {
-                    navigation.navigate('SimpleRegistrationScreen');
-                  } catch (err) {
-                    console.error(err);
-                  }
-                }}
-                style={styles(theme).Linkd3707c9f}
-                title={"S'inscrire"}
-              />
-            </View>
+          )}
+          <Spacer top={16} right={8} bottom={16} left={8} />
+          <View style={styles(theme).Viewb6df9a71}>
+            <Text>{'Pas encore de compte ?'}</Text>
+            <Spacer top={8} right={2} bottom={8} left={2} />
+            {/* Sign Up Link */}
+            <Link
+              onPress={() => {
+                try {
+                  navigation.navigate('SimpleRegistrationScreen');
+                } catch (err) {
+                  console.error(err);
+                }
+              }}
+              style={styles(theme).Linkd3707c9f}
+              title={"S'inscrire"}
+            />
           </View>
-        </KeyboardAwareScrollView>
-      </ScreenContainer>
+          <View>
+            <Text style={styles(theme).TextError}>{errorMessage}</Text>
+          </View>
+        </View>
+      </KeyboardAwareScrollView>
+    </ScreenContainer>
   );
 };
 
@@ -201,6 +220,10 @@ const styles = theme =>
       fontSize: 36,
       fontWeight: '600',
       textAlign: 'center',
+    },
+    TextError: {
+      textAlign: 'center',
+      color: theme.colors.error
     },
     Text23ad6e29: {
       color: theme.colors.error,

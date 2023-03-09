@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as CustomCode from '../CustomCode';
 import * as $Auth$DirectusApi from '../apis/$Auth$DirectusApi.js';
 import * as GlobalVariables from '../config/GlobalVariableContext';
 import { Button, Link, ScreenContainer, Spacer, withTheme } from '@draftbit/ui';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const SimpleRegistrationScreen = props => {
@@ -44,6 +44,9 @@ const SimpleRegistrationScreen = props => {
 
   const { theme } = props;
   const { navigation } = props;
+
+  const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const $Auth$DirectusEDITCurrentUserRolePATCH =
     $Auth$DirectusApi.useEDITCurrentUserRolePATCH();
@@ -114,9 +117,11 @@ const SimpleRegistrationScreen = props => {
               const handler = async () => {
                 try {
                   if (!emailInputValue) {
+                    setErrorMessage('Email invalide');
                     return;
                   }
                   if (!passwordInputValue) {
+                    setErrorMessage('Le mot de passe doit contenir 8 caractères minimum');
                     return;
                   }
                   const registerResponseJSON =
@@ -138,15 +143,22 @@ const SimpleRegistrationScreen = props => {
                     access_token: secret_token,
                     role: '17b8c0a5-4db5-4a63-a434-cb0e42e1b056',
                   });
+                  setSuccessMessage('Inscription réussie !');
+                  Alert.alert(
+                    'Succès',
+                    'Inscription réussie !',
+                    [{ text: 'OK', onPress: () => navigation.navigate('SimpleLoginScreen') }],
+                    { cancelable: false }
+                  )
                   navigation.navigate('SimpleLoginScreen');
                 } catch (err) {
-                  console.error(err);
+                  setErrorMessage('Une erreur s\'est produite lors de l\'inscription. Veuillez r\essayer !');
                 }
               };
               handler();
             }}
             style={styles(theme).Button413ac881}
-            title={"S'inscrire"}
+            title={"S'inscrireeee"}
           >
             {'Sign Up'}
           </Button>
@@ -166,6 +178,9 @@ const SimpleRegistrationScreen = props => {
               style={styles(theme).Linkd3707c9f}
               title={'se connecter'}
             />
+          </View>
+          <View>
+            <Text style={styles(theme).TextError}>{errorMessage}</Text>
           </View>
         </View>
       </KeyboardAwareScrollView>
@@ -193,6 +208,10 @@ const styles = theme =>
       fontSize: 36,
       fontWeight: '600',
       textAlign: 'center',
+    },
+    TextError: {
+      textAlign: 'center',
+      color: theme.colors.error
     },
     Text23ad6e29: {
       color: theme.colors.error,

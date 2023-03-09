@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -166,36 +166,26 @@ export const AgendaComponent = () => {
   function getTypeCard(e) {
     // get type of card from old, next or current day
 
-    let classList = [];
+    //let classList = [];
+    const dateParts = variables.selectedDate.split('-')
+    const dateObject = new Date(dateParts[0], dateParts[1] - 1, dateParts[2])
 
-    let today = new Date().getDate();
-    let currentMonth = new Date().getMonth();
-    let currentYear = new Date().getFullYear();
+    let today = dateObject.getDate();
+    let currentMonth = dateObject.getMonth();
+    let currentYear = dateObject.getFullYear();
 
-    if (e.number < today) {
-      classList = [styles.card, styles.oldDaysCard];
-    }
-    if (e.number > today) {
-      classList = [styles.card, styles.nextDaysCard];
-    }
-    if (variables.month > currentMonth) {
-      classList = [styles.card, styles.nextDaysCard];
-    }
-    if (variables.month < currentMonth) {
-      classList = [styles.card, styles.oldDaysCard];
-    }
-    if (variables.year < currentYear) {
-      classList = [styles.card, styles.oldDaysCard];
-    }
-    if (variables.year > currentYear) {
-      classList = [styles.card, styles.nextDaysCard];
-    }
-    if (
-      e.number === today &&
-      currentMonth === variables.month &&
-      variables.year === currentYear
-    ) {
-      classList = [styles.card, styles.currentDayCard];
+    const isCurrentDay = e.number === today && variables.month === currentMonth && variables.year === currentYear;
+    const isOldDay = e.number < today || variables.month < currentMonth || variables.year < currentYear;
+    const isNewDay = e.number > today || variables.month > currentMonth || variables.year > currentYear;
+
+    let classList = [styles.card];
+
+    if (isCurrentDay) {
+      classList.push(styles.currentDayCard);
+    } else if (isOldDay) {
+      classList.push(styles.oldDaysCard);
+    } else if (isNewDay) {
+      classList.push(styles.nextDaysCard);
     }
 
     return classList;
@@ -222,7 +212,6 @@ export const AgendaComponent = () => {
       key: 'selectedDate',
       value: variables.year + '-' + (variables.month + 1) + '-' + day,
     });
-    console.log(variables.selectedDate);
   }
 
   let state = {
@@ -234,9 +223,8 @@ export const AgendaComponent = () => {
       <View style={[styles.w100, styles.alignCenter]}>
         <Button title="<" onPress={down} />
         <Text style={styles.h1}>
-          {`${
-            monthList[initDaysOfMonth(variables.month, variables.year).month]
-          } ${variables.year}`.toString()}
+          {`${monthList[initDaysOfMonth(variables.month, variables.year).month]
+            } ${variables.year}`.toString()}
         </Text>
         <Button title=">" onPress={up} />
       </View>
@@ -289,6 +277,7 @@ export const AgendaComponent = () => {
                 <TouchableOpacity
                   style={getTypeCard(e)}
                   onPress={() => {
+                    console.log(291, e)
                     getAppointments(e.number);
                   }}
                 >
@@ -334,7 +323,11 @@ export const ToggleGroupButtons = () => {
   // get all variables list (ex: variables.myVariable)
   let variables = GlobalVariableContext.useValues();
 
-  const [selection, setSelection] = useState(variables.pageSelectedToggle);
+  const [selection, setSelection] = useState("");
+
+  useEffect(() => {
+    setSelection(variables.pageSelectedToggle);
+  }, [variables.pageSelectedToggle]);
 
   function setSelectedToggle(element) {
     setSelection(element);
@@ -355,6 +348,7 @@ export const ToggleGroupButtons = () => {
                   : { backgroundColor: '#F9F9F9' },
               ]}
               onPress={() => setSelectedToggle(e)}
+              key={i}
             >
               <Text
                 style={[

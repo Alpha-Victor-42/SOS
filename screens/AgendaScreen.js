@@ -112,11 +112,6 @@ const AgendaScreen = props => {
       {/* Action Sheet REMOVE */}
       <ActionSheet visible={actionSheetREMOVEmodal}>
         <ActionSheetItem
-          style={styles(theme).ActionSheetItemc521608b}
-          color={theme.colors.primary}
-          label={'Modifier le rendez-vous'}
-        />
-        <ActionSheetItem
           onPress={() => {
             const handler = async () => {
               try {
@@ -151,6 +146,7 @@ const AgendaScreen = props => {
         <ActionSheetItem
           onPress={() => {
             try {
+              setActionSheetADDmodal(false)
               navigation.navigate('AddRendezVousScreen');
             } catch (err) {
               console.error(err);
@@ -159,11 +155,6 @@ const AgendaScreen = props => {
           style={styles(theme).ActionSheetItemc521608b}
           color={theme.colors.primary}
           label={'Ajouter un rendez-vous'}
-        />
-        <ActionSheetItem
-          style={styles(theme).ActionSheetItemc521608b}
-          color={theme.colors.primary}
-          label={'Créer un rappel'}
         />
         <ActionSheetCancel
           onPress={() => {

@@ -24,6 +24,7 @@ import {
   View,
 } from 'react-native';
 import { Fetch } from 'react-request';
+import { Picker } from '@react-native-picker/picker';
 
 const NeedtypesoinmapScreen = props => {
   const Constants = GlobalVariables.useValues();
@@ -42,6 +43,7 @@ const NeedtypesoinmapScreen = props => {
   const [phone, setPhone] = React.useState('');
   const [pins, setPins] = React.useState({});
   const [type, setType] = React.useState('');
+  const [etbsType, setEtbsType] = React.useState('')
 
   const mapViewjR2IrRFKRef = React.useRef();
 
@@ -88,6 +90,63 @@ const NeedtypesoinmapScreen = props => {
           <Text style={styles(theme).Text069e065d}>{'Filtrer par:'}</Text>
         </View>
 
+        <Picker
+          selectedValue={etbsType}
+          style={styles.picker}
+          onValueChange={(itemValue, itemIndex) => setEtbsType(itemValue)}
+        >
+          <Picker.Item label="Aucun filtre" value="" />
+          <Picker.Item label="Associations" value="Association" />
+          <Picker.Item label="Services" value="Service" />
+          <Picker.Item label="Professionnels de santé" value="Professionnel de santé" />
+        </Picker>
+
+        <View style={styles(theme).Viewc22dd40d}>
+          {!contactModal ? null : (
+            <View>
+              <View style={styles(theme).View5b99e9cb}>
+                {/* H3 */}
+                <Text style={styles(theme).Textf206e902}>{name}</Text>
+                {/* Paragraphe */}
+                <>
+                  {!type ? null : (
+                    <Text style={styles(theme).Text66b7d74b}>{type}</Text>
+                  )}
+                </>
+                {/* Paragraphe */}
+                { adresse !== null && <Text style={styles(theme).Text66b7d74b}>{adresse}</Text>}
+                { phone !== null && <Link style={styles(theme).Link10a52308} title={`${phone}`} />}
+                { email !== null && <Link style={styles(theme).Link10a52308} title={`${email}`} /> }
+              </View>
+
+              <View style={styles(theme).View0ab10238}>
+                {/* Button Solid */}
+                <Button
+                  onPress={() => {
+                    const handler = async () => {
+                      try {
+                        await $Rest$DirectusPOSTContactPOST.mutateAsync({
+                          access_token: Constants['Directus_user_token'],
+                          adresse: adresse,
+                          email: email,
+                          nom: name,
+                          telephone: phone,
+                          type: type,
+                        });
+                      } catch (err) {
+                        console.error(err);
+                      }
+                    };
+                    handler();
+                  }}
+                  style={styles(theme).Button8ce897e6}
+                  title={'Ajouter à mes contacts'}
+                />
+              </View>
+            </View>
+          )}
+        </View>
+
         <View style={styles(theme).Viewc22dd40d}>
           <N8NApi.FetchGETBerneHitsGET
             access_token={Constants['Directus_user_token']}
@@ -95,7 +154,7 @@ const NeedtypesoinmapScreen = props => {
             lat={props.route?.params?.passedLat ?? ''}
             lng={props.route?.params?.passedLong ?? ''}
             radius={20000}
-            thematique={Constants['searchable_thematique']}
+            thematique={etbsType}
             topic={Constants['searchable_topic']}
           >
             {({ loading, error, data, refetchGETBerneHits }) => {
@@ -123,36 +182,34 @@ const NeedtypesoinmapScreen = props => {
                   }
                   renderItem={({ item }) => {
                     const mapViewData = item;
+
                     return (
                       <MapMarker
-                        title={mapViewData?.nom}
-                        description={mapViewData?.adresse}
-                        latitude={mapViewData?.latitude}
-                        longitude={mapViewData?.longitude}
+                        title={mapViewData?.Nom}
+                        description={mapViewData['Adresse complète']}
+                        latitude={mapViewData.Latitude}
+                        longitude={mapViewData.Longitude}
                       >
                         <MapCallout
                           onPress={() => {
                             try {
-                              setName(mapViewData?.nom);
-                              setType(
-                                mapViewData?.besoins && mapViewData?.besoins[0]
-                              );
-                              setAdresse(mapViewData?.adresse);
-                              setPhone(mapViewData?.telephone);
-                              setEmail(mapViewData?.email);
+                              setName(mapViewData?.Nom);
+                              setAdresse(mapViewData?.Adresse);
+                              setPhone(mapViewData["Téléphone"]);
+                              setEmail(mapViewData?.Email);
                               setContactModal(true);
                             } catch (err) {
                               console.error(err);
                             }
                           }}
-                          showTooltip={false}
+                          showTooltip={true}
                         />
                       </MapMarker>
                     );
                   }}
                   style={styles(theme).MapViewde486c79}
-                  latitude={(fetchData && fetchData[0])?.latitude}
-                  longitude={(fetchData && fetchData[0])?.longitude}
+                  latitude={(fetchData && fetchData[0])?.Latitude}
+                  longitude={(fetchData && fetchData[0])?.Longitude}
                   zoom={8}
                   zoomEnabled={true}
                   rotateEnabled={true}
@@ -167,49 +224,7 @@ const NeedtypesoinmapScreen = props => {
             }}
           </N8NApi.FetchGETBerneHitsGET>
           <>
-            {!contactModal ? null : (
-              <View>
-                <View style={styles(theme).View5b99e9cb}>
-                  {/* H3 */}
-                  <Text style={styles(theme).Textf206e902}>{name}</Text>
-                  {/* Paragraphe */}
-                  <>
-                    {!type ? null : (
-                      <Text style={styles(theme).Text66b7d74b}>{type}</Text>
-                    )}
-                  </>
-                  {/* Paragraphe */}
-                  <Text style={styles(theme).Text66b7d74b}>{adresse}</Text>
-                  <Link style={styles(theme).Link10a52308} title={`${phone}`} />
-                  <Link style={styles(theme).Link10a52308} title={`${email}`} />
-                </View>
 
-                <View style={styles(theme).View0ab10238}>
-                  {/* Button Solid */}
-                  <Button
-                    onPress={() => {
-                      const handler = async () => {
-                        try {
-                          await $Rest$DirectusPOSTContactPOST.mutateAsync({
-                            access_token: Constants['Directus_user_token'],
-                            adresse: adresse,
-                            email: email,
-                            nom: name,
-                            telephone: phone,
-                            type: type,
-                          });
-                        } catch (err) {
-                          console.error(err);
-                        }
-                      };
-                      handler();
-                    }}
-                    style={styles(theme).Button8ce897e6}
-                    title={'Ajouter à mes contacts'}
-                  />
-                </View>
-              </View>
-            )}
           </>
         </View>
       </ScrollView>
@@ -413,6 +428,20 @@ const styles = theme =>
       paddingRight: 16,
       paddingTop: 16,
       width: '100%',
+    },
+    container: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 10,
+    },
+    picker: {
+      width: 200,
+      height: 44,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      marginBottom: 10,
     },
     screen: { backgroundColor: theme.colors.divider },
   });
