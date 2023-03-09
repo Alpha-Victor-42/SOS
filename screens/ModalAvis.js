@@ -17,15 +17,13 @@ const ModalAvis = () => {
     }
 
     fetchUser().then((r) => {
-      console.log(r)
-      console.log('salut !')
       if (r) {
         return false
       }
 
       const timer = setTimeout(() => {
         setModalVisible(true);
-      }, 1000);
+      }, 600000);
 
       return () => clearTimeout(timer);
     })
@@ -43,12 +41,11 @@ const ModalAvis = () => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
+            <Text style={styles.modalText}>Votre avis est important.</Text>
 
             <View style={styles.buttons}>
               <Pressable
